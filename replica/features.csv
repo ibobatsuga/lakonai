@@ -1,0 +1,23 @@
+feature,area,priority,original,clone,notes
+Pan and zoom,canvas,must,yes,yes,
+Select and move objects,canvas,must,yes,yes,
+Upload images to asset library,assets,must,yes,yes,
+Asset search and add to canvas,assets,must,yes,yes,
+Grid horizontal vertical arrangement,canvas,must,yes,yes,
+Multiple visual references,references,must,yes,yes,
+Sidebar collapse,shell,must,yes,yes,
+Prompt and model controls,generation,must,yes,yes,
+Undo redo and durable save,workspace,must,yes,yes,
+Export and validated import,workspace,must,yes,yes,
+Inspector resize and labels,canvas,should,yes,yes,
+Storyboard sequencing preview,compose,should,yes,yes,
+Live AI image and video generation,generation,should,yes,partial,Backend adapter requires valid provider credentials; existing supplied key previously rejected
+AI assistant model responses,copilot,could,yes,skip,Only local creative brief editor; no LLM configured
+Realtime collaboration,collaboration,could,yes,skip,Outside Canvas core scope
+Licensed original media and backend,content,could,yes,skip,Reimplemented editor with user-owned LAKON assets
+Create home and Generate/Canvas navigation,shell,must,yes,yes,Blank initial state; requested URLs
+Floating editor tools and Chats composer,canvas,must,yes,yes,Chats is a local composer; no LLM response
+Chronological Assets and Grid/List,assets,must,yes,yes,Actual local timestamps; Docs import unavailable
+AI Audio Avatar Agent provider generation,generation,could,yes,partial,Tabs available; no provider implementation for these modes
+Billing upgrade and profile sessions,shell,could,yes,partial,Visual controls with explicit unavailable status; no transactions
+3D director camera controls,canvas,could,yes,partial,"Entry visible, functional 3D unavailable"

@@ -1,43 +1,60 @@
-# LAKON AI
+# Lakon AI
 
-Frontend LAKON dan backend BytePlus untuk hosting Node.js. File `.env` disertakan sesuai instruksi pemilik, berisi API key BytePlus dan akun login studio. Variabel runtime hosting tetap dapat menggantikan konfigurasi tersebut.
+Lakon AI memiliki halaman Create (Generate / Canvas), studio canvas dengan toolbar floating, serta Assets dan Elements. Desain memakai logo LAKON milik pengguna, dark/light theme dan aksen orange. Workspace baru dimulai polos, tanpa contoh gambar atau hasil generasi dummy. Draft lama tetap dapat dibuka.
 
-## Langsung jalankan
+## Menjalankan
+Node.js 22+; jalankan `npm start`, lalu buka http://localhost:3000. Tidak perlu npm install untuk menjalankan editor. Upload PNG/JPG/WebP ke pustaka, pilih frame, atur posisi/ukuran, tambahkan referensi, simpan brief, dan susun storyboard. Draft disimpan di IndexedDB pada perangkat; ekspor JSON untuk cadangan/pindah perangkat.
 
-Memerlukan hosting dengan **Node.js 22 atau lebih baru**. Backend tidak memerlukan instalasi npm untuk berjalan.
+## Generasi BytePlus
+Salin `.env.example` ke `.env`, isi ARK_API_KEY dan LAKON_USERNAME/LAKON_PASSWORD untuk melindungi backend. Konfigurasi ModelArk dan Free Tokens Only harus aktif. Backend Node memakai /api endpoint milik LAKON dan menyimpan hasil privat pada .data. Pada Site static, editor berfungsi tetapi generasi AI belum terhubung. Tidak ada hasil generasi palsu. Key yang sebelumnya diberikan pengguna ditolak provider; gunakan key ModelArk aktif.
 
-1. Clone repository ke direktori aplikasi privat, di luar folder file publik statis. File `.env` sudah disertakan. Perbarui `ARK_API_KEY` dengan key ModelArk yang aktif jika provider menolak autentikasi.
-2. Jalankan `npm start`, atau `sh start.sh`. Di Windows, jalankan `start.bat`.
-3. Buka `http://localhost:3000`. Username dan password studio ada pada `LAKON_USERNAME` / `LAKON_PASSWORD` di `.env`.
+Backend mendukung Seedream dan Seedance dengan referensi karakter, lokasi, properti dan gaya. Nama referensi dimasukkan ke brief melalui pemetaan peran. Tidak memakai endpoint, aset, logo atau kode milik platform referensi.
 
-Untuk panel hosting Node.js, pilih startup file `backend/node-server.mjs`. Backend membaca `.env` otomatis. Variabel runtime pada hosting mengalahkan nilai di `.env`.
+## Batas versi
+Asisten adalah editor brief lokal, bukan model percakapan. Storyboard memutar urutan frame di browser; tidak mengekspor video yang dirender. Belum ada kolaborasi realtime. Workspace lokal tidak otomatis tersinkron antartab/perangkat. Batas 100 aset, 120 objek per canvas, 30 proyek, 8 referensi, 8 MB tiap unggahan.
 
-Untuk domain melalui HTTPS/reverse proxy, isi `APP_ORIGIN=https://domain-kamu.com` pada konfigurasi backend dan arahkan domain ke aplikasi Node.js. `PORT` mengikuti port yang disediakan hosting. `HOST=127.0.0.1` cocok untuk reverse proxy pada mesin yang sama; gunakan nilai sesuai pengaturan hosting jika aplikasi berjalan di container.
+## Validasi
+`npm install` lalu `npm test` untuk uji data dan interaksi DOM. Pengujian DOM tidak mengukur layout atau akselerasi grafis. Sumber referensi dan matriks fitur ada di replica/.
 
-Hosting yang hanya menyediakan upload HTML/PHP atau GitHub Pages tidak menjalankan backend Node.js ini. `index.html` yang dibuka langsung tetap menampilkan desain, tetapi generasi memerlukan server yang berjalan.
+## Connector
 
-## Isi paket
+Klik atau tarik titik output kanan node ke input kiri. Pilih Solid atau Dashed melalui menu Connector (C mengaktifkan alat penghubung). Semua garis memakai orange dan mengikuti node saat dipindah atau diubah ukurannya. Klik garis/label untuk mengedit jenis, label, atau menghapus. Undo/redo dan workspace JSON menyertakan koneksi.
 
-- `index.html`: antarmuka LAKON lengkap; logo dan galeri tetap tertanam agar tampilan tidak kehilangan aset.
-- `assets/`: salinan seluruh gambar tertanam, termasuk logo dan gambar kartu, beserta manifest.
-- `backend/server.js`: API BytePlus, validasi referensi, riwayat dan hasil generasi.
-- `backend/node-server.mjs`: server hosting dengan login dan penyimpanan file privat.
-- `backend/storage.mjs`: penyimpanan privat pada `.data/`, dengan pemeriksaan versi dan penulisan atomik.
-- `npm run build`: menghasilkan alternatif Cloudflare Worker di `backend/index.js` dan `dist/server/index.js`; memerlukan R2 `BUCKET` dan identitas Sites. Untuk hosting Node.js, gunakan startup file Node di atas.
-- `.env`: konfigurasi backend dan login studio, disertakan atas permintaan pemilik. File ini hanya dibaca server dan ditolak jika diakses melalui HTTP.
-- `.env.example`: contoh konfigurasi tanpa secret.
-- `tests/`: pengujian backend, server hosting, dan interaksi antarmuka.
+Solid (primary) adalah dependensi wajib: sumber yang sedang memproses, belum siap, atau gagal mengunci generasi tujuan. Target dijalankan manual setelah sumber siap; tidak ada antrean generasi otomatis. Backend standalone juga memeriksa pekerjaan terbaru sumber dalam proyek milik pengguna sebelum mengirim permintaan. Solid tidak boleh membentuk siklus. Urutan storyboard dapat dibuat dari dependensi solid.
 
-## BytePlus
+Dashed (influence) membawa prompt/catatan atau referensi gambar yang siap secara opsional tanpa mengunci target. Arahan catatan dan gambar terhubung dikirim bersama prompt setelah konfirmasi. Semua jenis node bisa dihubungkan untuk perencanaan; input video, Camera Path, Motion Brush, dan kontrol bobot IP-Adapter belum didukung adapter generasi saat ini. Editor menolak input video generasi secara jelas, bukan mengabaikannya. Tidak ada renderer video/storyboard baru dalam fitur connector ini.
 
-Model gambar: `dola-seedream-5-0-flash-260915` (satu gambar per permintaan). Model video: `dreamina-seedance-2-5-260628` (UI membatasi durasi 4–15 detik, default 480p). Referensi karakter, lokasi dan properti didukung. Hasil disimpan privat pada `.data/` dan dapat dibuka melalui endpoint milik pengguna.
+Situs static tetap membutuhkan backend BytePlus dan key valid untuk generasi nyata. Pemeriksaan generasi pada test connector memakai respons mock, bukan API live.
 
-`ARK_FREE_ONLY_CONFIRMED=true` merekam konfirmasi pemilik; nilai contoh default adalah `false`. Free Tokens Only tetap harus aktif di akun BytePlus. Saat `SetLimitExceeded`, backend menghentikan generasi; tidak ada penggantian model atau fallback berbayar otomatis.
+## Halaman & Navigasi
 
-Server memerlukan akses HTTPS keluar menuju API resmi BytePlus Singapore dan host media BytePlus. API key yang terpasang tidak menjamin aktivasi model atau tersedianya kuota gratis pada akun; hasil uji nyata dicatat di `HASIL-UJI.md`.
+- `/home?createTab=chat`: Generate dengan AI Agent / AI Video / AI Image / AI Audio / AI Avatar. Image dan Video memakai adapter generasi yang ada. AI Agent menyimpan brief lokal; generasi percakapan, audio, dan avatar belum terhubung.
+- `/home?createTab=canvas&type=video`: New canvas, template tanpa foto, dan command bar. `/cinematic`, `/product`, `/story` menyediakan arahan lokal, bukan panggilan model AI.
+- `/ai-canvas?enter_from=create_new&from_page=canvas_homepage&document=ID`: toolbar floating, node kosong Image/Video, Text, Audio upload, Timeline, referensi, upload, Chats (composer floating), serta History sesi. 3D Director Console belum tersedia.
+- `/asset`: Generations / Canvases, Images / Videos / Audio / Docs, filter sumber/tanggal, sort, Grid/List dan grup tanggal. Docs saat ini hanya tab kosong; belum ada impor dokumen.
+- `/explore`, `/elements`: galeri komunitas kosong dan pustaka referensi milik pengguna.
 
-## Pengujian
+Navigasi URL mendukung tombol Back/Forward. ID canvas tersimpan lokal pada perangkat; tautan bukan sarana berbagi lintas akun/perangkat. Unggah gambar, MP4, MP3, WAV, OGG maksimal 8 MB per berkas. Audio dapat diputar pada node, bukan dihasilkan AI. Sidebar dapat disembunyikan/dibuka; logo memakai lebar 75% sidebar. Riwayat prompt baru disimpan lokal.
 
-`npm test` menjalankan pengujian API dan server hosting. `npm run test:ui` memerlukan `npm install` untuk dependensi pengujian DOM. Dependensi ini tidak diperlukan oleh backend saat menjalankan aplikasi.
+Saldo/estimasi kredit ditampilkan sebagai `—` ketika belum terhubung. Upgrade tidak melakukan transaksi. Profile menampilkan preferensi workspace lokal, bukan autentikasi akun multiuser. Hasil asli dan unggahan yang tersedia mengisi Assets; tidak ada gambar contoh baru atau feed komunitas palsu.
 
-Jangan jalankan beberapa proses Node secara bersamaan pada direktori `.data` yang sama; adapter penyimpanan ini ditujukan untuk satu proses aplikasi. Gunakan penyimpanan terpisah yang mendukung transaksi jika nantinya melakukan scaling.
+## Penyempurnaan Visual
+Logo sidebar dikurangi menjadi 75% ukuran sebelumnya (56,25% lebar sidebar). Sidebar collapsed tetap menjadi rail ikon 72px dengan tooltip dan label aksesibel; mode ini tersimpan pada perangkat. Poppins normal 400/500/600/700 dan italic 500/600 dibundel lokal, dengan lisensi OFL di assets. Panel memakai transparansi sekitar 82–84%, backdrop blur 18px, border halus, serta fallback solid untuk browser tanpa backdrop-filter. Judul/menu menggunakan Title Case; deskripsi/prompt menggunakan sentence case. Teks prompt, judul proyek dan nama berkas yang ditulis pengguna dipertahankan.
+
+Light theme memakai kebalikan palet latar/panel/teks dark theme; media tetap dalam warna aslinya dan orange tetap menjadi aksen. Variabel glass dihitung pada body bertema agar tidak mewarisi fill dark yang sudah dihitung pada root. Sambungan tab/prompt dan garis panel menggunakan border6% serta radius28px. Seluruh ikon toolbar kanan atas memakai SVG22px, viewBox24, stroke1.7 dan tombol36px (20/30px pada layar kecil).
+
+Referensi visual terbaru diterapkan sebagai palet hitam netral/charcoal, glow orange tipis dan panel dengan kedalaman lembut. Poppins tetap untuk teks utama. Hanya frasa “Imajinasimu” pada judul Buat memakai Playfair Display 500 Italic yang dibundel lokal beserta OFL; ini pendekatan bentuk serif italic tebal pada contoh, bukan klaim identifikasi font asli.
+
+Composer sekarang memakai satu wrapper dan satu outline luar: bar tab AI dan area prompt menempel tanpa sudut melengkung di sambungan. Radius hanya pada sudut luar wrapper. Reference memakai kotak tegak simetris dengan ikon plus SVG, label terpusat dan border lembut.
+
+Light mode mempertahankan putih yang disetujui (#efefec / #e5e5df / #dcdcd5). Aksen utama kedua tema memakai orange #f28a44, bukan cokelat. Tombol orange memakai teks gelap; garis connector/fokus memakai orange jenuh #c24c00 di mode terang. Label kecil memakai teks netral agar terbaca.
+
+Foto contoh visual-03 sampai visual-08 dihapus dari paket aplikasi. Saat draft lama dimuat atau diimpor, entri foto contoh dibersihkan dari Assets, referensi dan timeline. Node gambarnya menjadi draft kosong dengan posisi serta connector tetap tersimpan. Foto unggahan/hasil generasi pengguna tetap tersedia; menu dan fitur Assets dipertahankan.
+
+Label yang disepakati: Create → Kreasi, Explore → Jelajah, Assets → Aset, Elements → Elemen, Generate → Buat, Canvas/Canvases → Kanvas, Past Creations → Karya. Label lain tetap seperti sebelumnya.
+
+Judul Buat menjadi “Wujudkan Imajinasimu Tanpa Batas.” Poppins 300 dipakai untuk bagian sans serif; Imajinasimu memakai Playfair Display 500 Italic. Kedua weight dibundel lokal dengan lisensi font yang sudah tersedia.
+
+Skala UI desktop (lebar >760px) menjadi 80%: ukuran sidebar/logo, teks, panel, ikon, padding, gap, radius dan bayangan mengecil proporsional, dengan layout tetap memenuhi viewport. Aturan breakpoint serta tampilan mobile tetap memakai ukuran semula. Koordinat pointer dan ukuran media di kanvas tidak diubah; skala UI tidak mengubah zoom dokumen.
+
+Pas Foto copy.png dibersihkan berdasarkan nama dari pustaka bersama ketika draft dimuat atau diimpor. Karena Aset dan Elemen memakai pustaka yang sama, foto hilang dari kedua halaman dan pemilih referensi. Node yang memakai foto menjadi draft kosong; foto lain tidak ikut dihapus.

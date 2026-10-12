@@ -1,7 +1,7 @@
 import {Readable} from 'node:stream';
 import {pipeline} from 'node:stream/promises';
 import {tmpdir} from 'node:os';
-import {join,resolve} from 'node:path';
+import {join, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {loadEnvFile} from 'node:process';
 import {api} from '../backend/server.js';
@@ -30,19 +30,7 @@ export default async function handler(req, res) {
       ...process.env,
       BUCKET: bucket,
     };
-
-    // If username and password are provided in environment, enforce Basic Auth
-    if (env.LAKON_USERNAME && env.LAKON_PASSWORD) {
-      if (!authenticated(req.headers.authorization, env)) {
-        res.writeHead(401, {
-          'WWW-Authenticate': 'Basic realm="LAKON", charset="UTF-8"',
-          'Content-Type': 'text/plain;charset=utf-8',
-        });
-        res.end('Masuk ke LAKON dengan akun studio.');
-        return;
-      }
-    }
-
+    const protectedStudio = !!env.LAKON_PASSWORD && !!env.LAKON_USERNAME;
     const host = req.headers['x-forwarded-host'] || req.headers.host || 'localhost';
     const proto = req.headers['x-forwarded-proto'] || (host.startsWith('localhost') ? 'http' : 'https');
 
@@ -60,6 +48,26 @@ export default async function handler(req, res) {
     }
 
     const url = new URL(req.url, origin);
+    const path = url.pathname;
+
+    if (protectedStudio && !authenticated(req.headers.authorization, env)) {
+      res.writeHead(401, {
+        'WWW-Authenticate': 'Basic realm="LAKON", charset="UTF-8"',
+        'Cache-Control': 'no-store',
+        'Content-Type': 'text/plain;charset=utf-8'
+      });
+      return res.end('Masuk dengan akun studio pada konfigurasi backend.');
+    }
+
+    if (!protectedStudio && path !== '/api/config') {
+      res.writeHead(503, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
+      return res.end(JSON.stringify({ error: 'Atur LAKON_USERNAME dan LAKON_PASSWORD sebelum mengaktifkan backend AI.' }));
+    }
+
+    if (!protectedStudio && path === '/api/config') {
+      res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
+      return res.end(JSON.stringify({ providerReady: false, storageReady: false, error: 'Backend AI memerlukan konfigurasi autentikasi studio.' }));
+    }
 
     const headers = new Headers();
     for (const [key, value] of Object.entries(req.headers)) {
@@ -68,7 +76,6 @@ export default async function handler(req, res) {
       }
     }
 
-    // Set authenticated user context
     headers.set('oai-authenticated-user-id', 'hosting-owner');
     headers.set('oai-authenticated-user-full-name', 'Studio LAKON');
     headers.delete('authorization');

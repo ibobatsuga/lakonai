@@ -1,0 +1,5 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {parseRoute,routeURL} from '../routing.mjs';
+test('requested create and asset URLs map to their screen and state',()=>{assert.equal(parseRoute('/home?createTab=chat').tab,'generate');assert.equal(parseRoute('/home?createTab=canvas&type=video').tab,'canvas');assert.equal(parseRoute('/asset').page,'assets');assert.equal(parseRoute('/ai-canvas?document=my-doc').document,'my-doc');assert.equal(parseRoute('/ai-canvas?panel=timeline').view,'compose');assert.equal(parseRoute('/home?session=history').page,'history');assert.equal(parseRoute('/asset?type=invalid').assetKind,'image');});
+test('route builder carries document identity and library filters without inserting raw names',()=>{const url=routeURL({view:'canvas',document:'doc&one'});assert.equal(parseRoute(url).document,'doc&one');assert.equal(routeURL({view:'home',page:'create',tab:'canvas'}),'/home?createTab=canvas&type=video');const asset=parseRoute(routeURL({view:'home',page:'assets',assetTab:'canvases',assetKind:'video'}));assert.equal(asset.assetTab,'canvases');assert.equal(asset.assetKind,'video');});
