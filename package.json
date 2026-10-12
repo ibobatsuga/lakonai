@@ -1,0 +1,18 @@
+{
+  "name": "lakon",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node --env-file=.env backend/node-server.mjs",
+    "build": "node scripts/build.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "test:ui": "node tests/ui.dom.mjs"
+  },
+  "devDependencies": {
+    "linkedom": "0.18.13"
+  }
+}

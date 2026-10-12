@@ -1,0 +1,50 @@
+[
+  {
+    "file": "gallery-hero.jpg",
+    "mime": "image/jpeg"
+  },
+  {
+    "file": "lakon_logo.png",
+    "mime": "image/png"
+  },
+  {
+    "file": "visual-03.webp",
+    "mime": "image/webp"
+  },
+  {
+    "file": "visual-04.webp",
+    "mime": "image/webp"
+  },
+  {
+    "file": "visual-05.webp",
+    "mime": "image/webp"
+  },
+  {
+    "file": "visual-06.webp",
+    "mime": "image/webp"
+  },
+  {
+    "file": "visual-07.webp",
+    "mime": "image/webp"
+  },
+  {
+    "file": "visual-08.webp",
+    "mime": "image/webp"
+  },
+  {
+    "file": "gallery-orb.svg",
+    "mime": "image/svg+xml"
+  },
+  {
+    "file": "gallery-arch.svg",
+    "mime": "image/svg+xml"
+  },
+  {
+    "file": "gallery-land.svg",
+    "mime": "image/svg+xml"
+  },
+  {
+    "file": "gallery-wave.svg",
+    "mime": "image/svg+xml"
+  }
+]

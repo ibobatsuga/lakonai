@@ -1,0 +1,4 @@
+import {readFile,writeFile,mkdir} from 'node:fs/promises';
+const html=await readFile('index.html','utf8'),server=(await readFile('backend/server.js','utf8')).replaceAll('export ','');
+const output=server+'\nconst HTML='+JSON.stringify(html)+';\n'+`export default {async fetch(request,env){const path=new URL(request.url).pathname;if(path.startsWith('/api/'))return api(request,env);if(!['GET','HEAD'].includes(request.method))return new Response('Method not allowed',{status:405});return new Response(request.method==='HEAD'?null:HTML,{headers:{'Content-Type':'text/html;charset=utf-8','Cache-Control':'no-store'}})}};`;
+await writeFile('backend/index.js',output);await mkdir('dist/server',{recursive:true});await writeFile('dist/server/index.js',output);console.log('Worker bundle selesai. Node.js langsung menggunakan backend/node-server.mjs.');
