@@ -76,3 +76,22 @@ body.light button:focus-visible,body.light input:focus-visible,body.light textar
 /* Desktop UI density: 80% of original dimensions; mobile retains its readable scale. */
 :root{--ui-scale:1}
 @media(min-width:761px){:root{--ui-scale:.8}}
+
+/* Canvas management & 3-dots menus */
+.sidebar-project-item{display:flex;align-items:center;position:relative;width:100%}
+.sidebar-project-item .sidebar-project{flex:1;min-width:0;padding-right:calc(26px * var(--ui-scale, 1))}
+.sidebar-project-more{position:absolute;right:calc(2px * var(--ui-scale, 1));width:calc(24px * var(--ui-scale, 1));height:calc(24px * var(--ui-scale, 1));border:0;background:none;border-radius:calc(5px * var(--ui-scale, 1));color:var(--text-muted);display:flex;align-items:center;justify-content:center;opacity:.65;cursor:pointer}
+.sidebar-project-more:hover{opacity:1;background:var(--surface-raised);color:var(--text)}
+body.sidebar-closed .sidebar-project-more{display:none}
+
+.canvas-card{position:relative;text-align:left;padding:0;border:calc(1px * var(--ui-scale, 1)) solid var(--border);border-radius:calc(14px * var(--ui-scale, 1));min-height:calc(115px * var(--ui-scale, 1));background:var(--surface);display:flex}
+.canvas-card-main{flex:1;text-align:left;padding:calc(20px * var(--ui-scale, 1));background:none;border:0;color:inherit;cursor:pointer;width:100%}
+.canvas-card-main strong{display:block;font-weight:500;margin-bottom:calc(6px * var(--ui-scale, 1))}
+.canvas-card-main small{color:var(--text-muted)}
+.canvas-card-more{position:absolute;top:calc(10px * var(--ui-scale, 1));right:calc(10px * var(--ui-scale, 1));width:calc(28px * var(--ui-scale, 1));height:calc(28px * var(--ui-scale, 1));border-radius:calc(6px * var(--ui-scale, 1));display:flex;align-items:center;justify-content:center;color:var(--text-muted);opacity:.7;cursor:pointer}
+.canvas-card-more:hover{opacity:1;color:var(--text);background:var(--glass-raised)}
+
+.project-option-row{display:flex;align-items:center;gap:calc(6px * var(--ui-scale, 1));width:100%}
+.project-option-row .project-option{flex:1}
+#canvas-more-btn{margin-left:calc(-4px * var(--ui-scale, 1));color:var(--text-muted)}
+#canvas-more-btn:hover{color:var(--text);background:var(--glass-raised)}
